@@ -1,0 +1,13 @@
+{
+ "next_id": 1,
+ "categories": [
+  "Raw Material",
+  "Machining",
+  "Heat Treatment",
+  "Surface Treatment",
+  "Bought-out Components",
+  "Fabrication",
+  "Other"
+ ],
+ "vendors": []
+}

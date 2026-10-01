@@ -1,0 +1,670 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Project Estimation</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+<header>
+  <div class="userstrip">
+    <span class="uname">{{ session_name }}</span>
+    <span class="urole">{{ session_designation }}</span>
+    <a href="{{ url_for('logout') }}" class="signout">Sign out</a>
+  </div>
+  <h1>Project Estimation</h1>
+  <p>Plate, scrap and cost from your part sizes. Vendors, offcut stock, approvals and
+     reimbursement are handled in the Project Enquiry tool.</p>
+  <div class="projbar" id="projBar"></div>
+  <nav class="page-nav">
+    <button class="nav-btn active" data-page="projectPage">Projects</button>
+    <button class="nav-btn" data-page="rfqPage">RFQ</button>
+    <button class="nav-btn" data-page="statusPage">Status</button>
+  </nav>
+</header>
+
+<main>
+<aside class="bomside" id="bomSide" style="display:none">
+  <div class="bomside-head">
+    <h3>Assembly</h3>
+    <span class="hint" id="bomSideMeta"></span>
+  </div>
+  <div id="bomSideTree"></div>
+</aside>
+
+<div class="workcol">
+
+  <section class="app-page" id="projectPage">
+  <div class="proj-head">
+    <div>
+      <h1 class="proj-title">Projects</h1>
+      <p class="proj-sub">Select an existing project or create a new project to begin.</p>
+    </div>
+    <div class="proj-actions">
+      <label class="sec filebtn">Open .rmp file<input type="file" id="importFile"
+        accept=".rmp,.json" style="display:none"></label>
+      <button id="newProjBtn">+ Add Project</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="cardhead-row">
+      <h2>All Projects</h2>
+      <span class="hint" id="projMeta"></span>
+    </div>
+    <p class="hint" id="projMsg"></p>
+    <div id="projList"></div>
+    <p class="hint proj-note">Each project keeps its own parts, settings and job
+      history, and is saved as you work. Offcut stock is deliberately shared
+      across every project &mdash; a remnant from last month is still usable
+      steel this month.</p>
+  </div>
+  </section>
+
+  <div class="modal-back" id="projModal" style="display:none">
+    <div class="modal">
+      <div class="modal-head">
+        <div>
+          <h2>Create New Project</h2>
+          <p class="hint">Enter the basic project information.</p>
+        </div>
+        <button class="modal-x" id="projModalX">&times;</button>
+      </div>
+
+      <label class="fld">Project Number <span class="req">*</span>
+        <input type="text" id="newProjNumber" placeholder="e.g. MS_1082_114"></label>
+
+      <label class="fld">Project Name <span class="req">*</span>
+        <input type="text" id="newProjName" placeholder="e.g. Pressure Vessel Project"></label>
+
+      <label class="fld">Customer
+        <input type="text" id="newProjClient" placeholder="Customer name"></label>
+
+      <label class="fld">Description
+        <textarea id="newProjNotes" rows="3" placeholder="Project description"></textarea></label>
+
+      <p class="hint modal-err" id="projModalErr"></p>
+
+      <div class="modal-foot">
+        <button class="sec" id="projModalCancel">Cancel</button>
+        <button id="projModalCreate">Create Project</button>
+      </div>
+    </div>
+  </div>
+
+<div class="workbar" id="workBar" style="display:none">
+  <button class="work-btn active" data-work="bomWork">BOM</button>
+  <button class="work-btn" data-work="resultsWork">Results</button>
+  <button class="work-btn" data-work="summaryWork">Summary</button>
+  <span class="workproj" id="workProj"></span>
+</div>
+
+<section class="app-page work-page" id="bomWork" style="display:none">
+  <div class="card">
+    <div class="cardhead-row">
+      <h2>BOM details</h2>
+      <span class="hint" id="bomMeta"></span>
+    </div>
+    <p class="hint">List what the assembly is made of. Choose a component type
+      to enter its dimensions, or <b>Sub-assembly</b> to break a line down
+      further into its own BOM.</p>
+
+    <div class="tablewrap">
+      <table id="bomTable">
+        <thead>
+          <tr>
+            <th rowspan="2">Part No.</th><th rowspan="2">Part Name</th>
+            <th rowspan="2">Qty</th><th rowspan="2">Thk (mm)</th>
+            <th rowspan="2">Type</th>
+            <th class="procgroup" id="procGroupHead">Manufacturing process</th>
+            <th rowspan="2"></th><th rowspan="2"></th>
+          </tr>
+          <tr id="procHeadRow"></tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+
+    <div class="proclegend" id="procLegend"></div>
+
+    <div class="row" style="margin-top:12px">
+      <button class="sec" id="bomAddBtn">+ Add BOM line</button>
+      <label class="sec filebtn">Upload Excel BOM<input type="file"
+             id="bomImportFile" accept=".xlsx,.xlsm" hidden></label>
+      <span class="hint" id="bomMsg"></span>
+    </div>
+
+    <div id="bomImportReport" class="bomreport" style="display:none"></div>
+
+    <div id="bomCrumb" class="bomcrumb"></div>
+  </div>
+</section>
+
+<section class="app-page work-page" id="inputWork" style="display:none">
+  <div class="card">
+    <h2>1&nbsp; Select component</h2>
+    <span class="seg" id="typeTabs">
+      {% for ct in component_types %}
+        <span data-type="{{ ct }}">{{ ct }}</span>
+      {% endfor %}
+    </span>
+    <p class="hint">Your parts stay put when you switch tabs. All of them get calculated together.</p>
+    <div class="tally" id="tally"></div>
+  </div>
+
+  <div class="card">
+    <h2 id="tableTitle">2&nbsp; Enter part details</h2>
+    <p class="hint" id="tableNote"></p>
+    <div class="tablewrap">
+      <table id="partsTable"><thead></thead><tbody id="partsBody"></tbody></table>
+    </div>
+
+    <div class="legend" id="legend"></div>
+
+    <div class="row" style="margin-top:12px">
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>3&nbsp; Plate settings</h2>
+
+    <div class="opt">
+      <label class="chk"><input type="checkbox" id="useStd" checked>
+        <span>Cut from standard plate size</span></label>
+      <div class="plateinputs">
+        <select id="platePreset">
+          <option value="">Preset&hellip;</option>
+          {% for p in standard_plates %}
+            <option value="{{ loop.index0 }}">{{ p.label }}</option>
+          {% endfor %}
+          <option value="custom">Custom size&hellip;</option>
+        </select>
+        <input type="number" id="plateW" value="1250" min="1"> <span class="x">&times;</span>
+        <input type="number" id="plateL" value="2500" min="1"> <span class="x">mm</span>
+      </div>
+      <p class="hint" id="stdHint"></p>
+    </div>
+
+    <div class="opt">
+      <label class="chk"><input type="checkbox" id="autoPlate" checked>
+        <span>Buy the smallest stock plate each group fits on</span></label>
+      <p class="hint">The size above is the biggest sheet you are willing to buy.
+        A material and thickness whose parts all fit a smaller stock size gets
+        that instead, so one big part cannot force a large plate on everything
+        else. Untick to put every group on the size above.</p>
+    </div>
+
+    <div class="opt">
+      <h3 class="opth">Plate size per material and thickness</h3>
+      <p class="hint">Automatic buys the smallest sheet that fits, which is right
+        when the offcut will never be used again. When a grade and thickness comes
+        up on every job, a bigger sheet can be worth it because the remnant goes
+        back on the rack. Only you know what the rack turns over, so set it here.</p>
+      <div id="plateChoices"></div>
+    </div>
+
+    <div class="opt">
+      <label class="chk"><input type="checkbox" id="combine" checked>
+        <span>Let different components share a plate</span></label>
+      <p class="hint">Same material and thickness can share one plate. Untick if they're
+        cut at different times.</p>
+    </div>
+
+    <div class="opt">
+      <label class="chk"><input type="checkbox" id="useRemnants">
+        <span>Cut from offcut stock first</span></label>
+      <p class="hint" id="remHint">Uses what's already on the rack before buying new plate.</p>
+    </div>
+
+    <div class="opt">
+      <div class="chk"><span>Cutting</span></div>
+      <div class="plateinputs">
+        <label class="mini">Rate &#8377;/m <input type="number" id="cutRate" value="{{ cut_defaults.rate_per_m }}" min="0" step="0.5"></label>
+        <label class="mini">Pierce &#8377; <input type="number" id="pierceCharge" value="{{ cut_defaults.pierce_charge }}" min="0" step="0.5"></label>
+      </div>
+      <p class="hint">Per metre of cut path, plus a charge for each pierce.
+        Cutting scales with edge length rather than area, so many small blanks
+        cost more to cut than one large one of the same weight &mdash; and a
+        part with a bore costs two pierces, not one.</p>
+    </div>
+
+    <div class="row" style="margin-top:14px">
+      <button id="calcBtn">Calculate</button>
+      <span class="hint" id="status"></span>
+    </div>
+  </div>
+
+  <div class="row page-actions">
+    <button class="sec" onclick="showWork('resultsWork')">View Results</button>
+  </div>
+  </section>
+
+  <section class="app-page work-page" id="resultsWork" style="display:none">
+  <div class="card" id="result" style="display:none">
+    <h2>4&nbsp; Result &mdash; grouped by material &amp; thickness</h2>
+    <div id="flags"></div>
+    <div class="stat" id="stat"></div>
+    <div class="tablewrap">
+      <table id="resultsTable"><thead></thead><tbody></tbody></table>
+    </div>
+    <div id="diagrams"></div>
+    <p class="hint" id="gapNote"></p>
+  </div>
+
+  <div class="row page-actions">
+    <button class="sec" id="backToInputBtn">Back to Input</button>
+    <button class="sec" id="commitBtn" disabled>Save job &amp; leftover to Store</button>
+    <span class="hint" id="commitMsg"></span>
+  </div>
+  </section>
+
+  <section class="app-page" id="stockPage" style="display:none">
+  <div class="card" id="rackCard">
+    <div class="cardhead-row">
+      <h2>5&nbsp; Offcut stock</h2>
+      <span class="hint" id="rackTotal"></span>
+    </div>
+    <p class="hint">Usable material left over from finished jobs. Working out a
+      cost never changes this &mdash; press <b>Save leftover material</b> once a
+      job is actually made.</p>
+
+    <div class="row" id="rackActions">
+      <button class="sec" id="clearBookedBtn">Hide finished parts</button>
+    </div>
+
+    <div class="tablewrap" style="margin-top:10px">
+      <table id="rackTable">
+        <thead><tr>
+          <th>ID</th><th>Material</th><th>t (mm)</th><th>Size (mm)</th>
+          <th>Area (m&sup2;)</th><th>From</th><th>Added</th><th></th>
+        </tr></thead>
+        <tbody></tbody>
+      </table>
+    </div>
+
+    <div class="row" style="margin-top:12px">
+      <span class="hint">Add by hand:</span>
+      <select id="remMat"></select>
+      <input type="number" id="remThk" placeholder="t" style="width:70px" min="0.1" step="0.5">
+      <input type="number" id="remW" placeholder="width" style="width:90px" min="1">
+      <input type="number" id="remL" placeholder="length" style="width:90px" min="1">
+      <button class="sec" id="remAddBtn">Add</button>
+      <span class="hint" id="remMsg"></span>
+    </div>
+  </div>
+  <div class="row page-actions">
+    <button class="sec" id="stockToResultsBtn">Back to Results</button>
+    <button class="sec" onclick="showWork('inputWork')">Back to Input</button>
+    <button class="sec" onclick="showWork('summaryWork')">View Summary</button>
+  </div>
+  </section>
+
+
+  <section class="app-page work-page" id="summaryWork" style="display:none">
+  <div class="card">
+    <div class="cardhead-row">
+      <h2>Project summary &mdash; everything made and bought</h2>
+      <span class="hint" id="sumMeta"></span>
+    </div>
+    <p class="hint">Every saved job, kept permanently. Parts drop off the input
+      table once produced, so this is the running record of what the project has
+      actually consumed. Anything worked out but not yet saved shows as pending.</p>
+
+    <div class="kpis" id="sumKpis"></div>
+
+    <h3 class="sub-h">By component</h3>
+    <div class="tablewrap">
+      <table id="sumTypeTable">
+        <thead><tr>
+          <th>Component</th><th>Made from plate</th><th>Purchased</th>
+          <th>Total</th><th>Cost</th>
+        </tr></thead>
+        <tbody></tbody>
+      </table>
+    </div>
+
+    <p class="hint" id="sumBasis"></p>
+
+    <h3 class="sub-h">Part by part</h3>
+    <div class="tablewrap">
+      <table id="sumLineTable">
+        <thead><tr>
+          <th>Job</th><th>Component</th><th>Part No.</th><th>Description</th>
+          <th>Material</th><th>t (mm)</th><th>Qty</th><th>Source</th>
+          <th>Weight (kg)</th><th>Cost</th>
+        </tr></thead>
+        <tbody></tbody>
+      </table>
+    </div>
+
+    <div class="row" style="margin-top:14px">
+      <button class="sec" onclick="showWork('inputWork')">Back to Input</button>
+      <button id="rfqBtn">Generate RFQ</button>
+      <button class="sec" id="clearJobsBtn">Clear job history</button>
+      <span class="hint" id="sumMsg"></span>
+    </div>
+  </div>
+  </section>
+
+
+  <section class="app-page" id="rfqPage" style="display:none">
+  <div class="proj-head">
+    <div>
+      <h1 class="proj-title">Request for Quotation</h1>
+      <p class="proj-sub">Raw material only. One document per vendor, addressed
+        to them by name and ready to send.</p>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="cardhead-row">
+      <h2>Raw material to be quoted</h2>
+      <span class="hint" id="rfqMeta"></span>
+    </div>
+    <p class="hint" id="rfqNote">Taken from the plate and pipe this project has
+      to buy. Bought-out components are finished parts, not raw material, and
+      are not included here.</p>
+
+    <div class="tablewrap">
+      <table id="rfqItemTable">
+        <thead><tr>
+          <th>#</th><th>Item</th><th>Material</th><th>Size</th>
+          <th>Thickness</th><th>Qty</th><th>Approx. weight</th>
+        </tr></thead>
+        <tbody></tbody>
+      </table>
+    </div>
+
+    <h3 class="sub-h">Send to</h3>
+    <p class="hint">Every raw material vendor is ticked by default. Each one
+      gets its own document.</p>
+    <div id="rfqVendors" class="catgrid"></div>
+
+    <div class="row" style="margin-top:14px">
+      <button id="rfqSubmitBtn">Send for approval</button>
+      <button id="rfqGenBtn">Generate RFQ per vendor</button>
+      <button class="sec" id="rfqRefreshBtn">Refresh</button>
+      <label class="chk inlinechk"><input type="checkbox" id="rfqEmailVendors">
+        <span>Email each vendor</span></label>
+      <span class="hint" id="rfqMsg"></span>
+    </div>
+    <div id="rfqResult"></div>
+  </div>
+
+  <div class="card">
+    <div class="cardhead-row"><h2>RFQs issued</h2>
+      <span class="hint" id="rfqArchCount"></span></div>
+    <p class="hint">Every RFQ this app has generated, kept in
+      <code>rfq_archive\</code> whatever you chose in the Save dialog. Use
+      <b>Save a copy</b> to put one wherever you need it now.</p>
+    <div id="rfqArchive"></div>
+  </div>
+  </section>
+
+
+  <section class="app-page" id="vendorPage" style="display:none">
+  <div class="proj-head">
+    <div>
+      <h1 class="proj-title">Vendor List</h1>
+      <p class="proj-sub">Suppliers, grouped by what they supply. An RFQ goes
+        to the vendors in the matching category.</p>
+    </div>
+    <div class="proj-actions">
+      <button id="vendorAddBtn">+ Add Vendor</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="cardhead-row">
+      <h2>All Vendors</h2>
+      <span class="hint" id="vendorMeta"></span>
+    </div>
+    <p class="hint" id="vendorMsg"></p>
+    <div id="vendorList"></div>
+  </div>
+  </section>
+
+  <section class="app-page" id="reimbPage" style="display:none">
+    <div class="card">
+      <div class="cardhead-row"><h2>Expense reimbursement</h2>
+        <span class="hint" id="reimbSheetNoLbl"></span></div>
+      <p class="hint">Printed or handwritten receipts and GST bills only &mdash;
+        UPI payments are not accepted. Caps are per day: breakfast &#8377;75,
+        lunch &#8377;150, dinner &#8377;150, stay &#8377;1000.</p>
+
+      <div class="grid4" style="margin-top:12px">
+        <div><label class="flab">Reimbursement sheet no.</label>
+          <input type="text" id="rbSheetNo"></div>
+        <div><label class="flab">Period from</label><input type="date" id="rbFrom"></div>
+        <div><label class="flab">Period to</label><input type="date" id="rbTo"></div>
+        <div><label class="flab">Advance payment (&#8377;)</label>
+          <input type="number" id="rbAdvance" min="0" step="0.01" value="0"></div>
+        <div><label class="flab">Employee name <i>*</i></label>
+          <input type="text" id="rbEmployee"></div>
+        <div><label class="flab">Employee ID</label><input type="text" id="rbEmpId"></div>
+        <div><label class="flab">Department</label><input type="text" id="rbDept"></div>
+      </div>
+
+      <h3 class="subhead" style="margin-top:16px">Itemized expenses</h3>
+      <div class="tablewrap">
+        <table class="grid" id="rbTable">
+          <thead><tr><th>Sr.No</th><th>Date</th><th>Description</th>
+            <th>Vendor Name</th><th>Category</th><th>Bill no.</th>
+            <th class="rate-col">Cost (&#8377;)</th><th></th></tr></thead>
+          <tbody></tbody>
+        </table>
+      </div>
+      <div class="row" style="margin-top:10px">
+        <button class="sec" id="rbAddRow">+ Add line</button>
+        <label class="sec filebtn">Upload bills<input type="file" id="rbBillFile"
+               accept=".pdf,.jpg,.jpeg,.png" multiple hidden></label>
+        <span class="hint" id="rbMsg"></span>
+      </div>
+      <p class="hint">PDF, JPG or PNG. Photos go into the sheet itself; PDFs
+        are saved next to it.</p>
+      <div id="rbBills"></div>
+      <datalist id="rbVendorList"></datalist>
+
+      <div class="grid2" style="margin-top:14px">
+        <div><label class="flab">Notes</label>
+          <textarea id="rbNotes" rows="3"></textarea></div>
+        <div id="rbTotals" class="rbtotals"></div>
+      </div>
+
+      <div id="rbFlags"></div>
+
+      <div class="row" style="margin-top:14px">
+        <button id="rbDocx">Generate Word sheet</button>
+        <span class="hint">Don't forget to attach the receipts.</span>
+      </div>
+    </div>
+  </section>
+
+  <section class="app-page" id="statusPage" style="display:none">
+    <div class="card">
+      <div class="cardhead-row">
+        <h2>Project status</h2>
+        <span class="hint" id="statusMeta"></span>
+      </div>
+      <p class="hint">Progress from project setup through to RFQ issue. Activities
+        marked <span class="pill p-auto">auto</span> are filled in by the app as you
+        work &mdash; the rest you add and update yourself.</p>
+      <div class="stats" id="statusStats"></div>
+      <div class="board" id="statusBoard"></div>
+      <div class="legend">
+        <span><b>Auto</b> &mdash; the app already knows this, no typing</span>
+        <span><b>Overdue</b> &mdash; due date passed, not completed</span>
+        <span><b>Phases</b> are fixed and follow the app's own workflow</span>
+      </div>
+    </div>
+  </section>
+
+  <div class="modal-back" id="actModal" style="display:none">
+    <div class="modal">
+      <div class="modal-head">
+        <div><h2 id="actModalTitle">Edit activity</h2></div>
+        <button class="modal-x" id="actModalX">&times;</button>
+      </div>
+      <label class="flab">Activity name <i>*</i></label>
+      <input type="text" id="actName" placeholder="What has to happen">
+      <label class="flab">Assignee <i>*</i></label>
+      <select id="actWho"></select>
+      <label class="flab">Due date <i>*</i></label>
+      <input type="date" id="actDue">
+      <label class="flab">Status</label>
+      <select id="actStatus">
+        <option value="todo">Not started</option>
+        <option value="prog">In progress</option>
+        <option value="done">Completed</option>
+        <option value="hold">On hold</option>
+      </select>
+      <label class="flab">Remark</label>
+      <textarea id="actRemark" rows="3" placeholder="Optional"></textarea>
+      <p class="hint modal-err" id="actModalErr"></p>
+      <div class="modal-foot">
+        <button class="sec" id="actModalCancel">Cancel</button>
+        <button id="actModalSave">Save</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-back" id="rfqPreviewModal" style="display:none">
+    <div class="modal modal-wide">
+      <div class="modal-head">
+        <div>
+          <h2 id="rfqPreviewTitle">RFQ Preview</h2>
+          <p class="hint" id="rfqPreviewSub"></p>
+        </div>
+        <button class="modal-x" id="rfqPreviewX">&times;</button>
+      </div>
+      <div id="rfqPreviewTabs" class="rfqtabs"></div>
+      <div id="rfqPreviewBody" class="rfqpaper"></div>
+      <p class="hint modal-err" id="rfqPreviewErr"></p>
+      <div class="modal-foot">
+        <button class="sec" id="rfqPreviewCancel">Close</button>
+        <button id="rfqPreviewConfirm" style="display:none">Send for Approval</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-back" id="vendorModal" style="display:none">
+    <div class="modal modal-wide">
+      <div class="modal-head">
+        <div>
+          <h2 id="vendorModalTitle">Add Vendor</h2>
+          <p class="hint">Master vendor data sheet.</p>
+        </div>
+        <button class="modal-x" id="vendorModalX">&times;</button>
+      </div>
+
+      <h3 class="sub-h">Company Info</h3>
+      <div class="fld-grid">
+        <label class="fld">Company Name <span class="req">*</span>
+          <input type="text" id="vCompany"></label>
+        <label class="fld">City <input type="text" id="vCity"></label>
+      </div>
+      <label class="fld">Address <input type="text" id="vAddress"></label>
+      <label class="fld">Products &amp; Services <input type="text" id="vProducts"></label>
+      <div class="fld-grid">
+        <label class="fld">Website <input type="text" id="vWebsite"></label>
+        <label class="fld">Portfolio / Brochure <input type="text" id="vPortfolio"></label>
+      </div>
+
+      <h3 class="sub-h">Supplies <span class="req">*</span></h3>
+      <div class="catgrid" id="vCats"></div>
+
+      <h3 class="sub-h">Primary Contact</h3>
+      <div class="fld-grid3">
+        <label class="fld">Name <input type="text" id="vP1Name"></label>
+        <label class="fld">Email <input type="text" id="vP1Email"></label>
+        <label class="fld">Phone <input type="text" id="vP1Phone"></label>
+      </div>
+
+      <h3 class="sub-h">Secondary Contact <span class="opt">optional</span></h3>
+      <div class="fld-grid3">
+        <label class="fld">Name <input type="text" id="vP2Name"></label>
+        <label class="fld">Email <input type="text" id="vP2Email"></label>
+        <label class="fld">Phone <input type="text" id="vP2Phone"></label>
+      </div>
+
+      <h3 class="sub-h">Tertiary Contact <span class="opt">optional</span></h3>
+      <div class="fld-grid3">
+        <label class="fld">Name <input type="text" id="vP3Name"></label>
+        <label class="fld">Email <input type="text" id="vP3Email"></label>
+        <label class="fld">Phone <input type="text" id="vP3Phone"></label>
+      </div>
+
+      <h3 class="sub-h">Other Info</h3>
+      <div class="fld-grid">
+        <label class="fld">GST / Tax ID <input type="text" id="vGst"></label>
+        <label class="fld">Payment Terms <input type="text" id="vPay"></label>
+      </div>
+      <label class="fld">Notes <textarea id="vNotes" rows="2"></textarea></label>
+
+      <p class="hint modal-err" id="vendorModalErr"></p>
+      <div class="modal-foot">
+        <button class="sec" id="vendorModalCancel">Cancel</button>
+        <button id="vendorModalSave">Save Vendor</button>
+      </div>
+    </div>
+  </div>
+
+
+  <section class="app-page" id="approvalPage" style="display:none">
+  <div class="proj-head">
+    <div>
+      <h1 class="proj-title">Approvals</h1>
+      <p class="proj-sub">An RFQ is signed off in turn before it can be issued.</p>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="cardhead-row">
+      <h2>Waiting for you</h2>
+      <span class="hint" id="apMeta"></span>
+    </div>
+    <p class="hint" id="apMailWarn"></p>
+    <div id="apMine"></div>
+  </div>
+
+  <div class="card">
+    <div class="cardhead-row">
+      <h2>All requests</h2>
+      <span class="hint" id="apAllMeta"></span>
+    </div>
+    <div id="apAll"></div>
+  </div>
+
+  <div class="card">
+    <div class="cardhead-row">
+      <h2>Outbox</h2>
+      <span class="hint" id="apOutMeta"></span>
+    </div>
+    <p class="hint">Every notification the app tried to send. Messages are
+      recorded here whether or not mail is configured, so nothing goes missing
+      silently.</p>
+    <div class="tablewrap" style="max-height:38vh">
+      <table id="apOutbox">
+        <thead><tr><th>When</th><th>To</th><th>Subject</th><th>Status</th></tr></thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
+  </section>
+
+</div>
+</main>
+
+<script>
+  const MATERIALS = {{ materials|tojson }};
+  const COMPONENT_TYPES = {{ component_types|tojson }};
+  const CUT_GAP_FACTOR = {{ cut_gap_factor|tojson }};
+  const STANDARD_PLATES = {{ standard_plates|tojson }};
+  const CUT_DEFAULTS = {{ cut_defaults|tojson }};
+</script>
+<script src="{{ url_for('static', filename='script.js') }}"></script>
+
+</body>
+</html>

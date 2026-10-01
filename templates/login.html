@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sign in — Project Estimation</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+<style>
+ body{margin:0;background:#eef1f5;font:14px/1.5 -apple-system,BlinkMacSystemFont,
+   "Segoe UI",Roboto,Helvetica,Arial,sans-serif;color:#1a1d21}
+ .loginwrap{min-height:100vh;display:flex;align-items:center;justify-content:center;
+   padding:24px}
+ .loginbox{width:100%;max-width:420px;background:#fff;border-radius:12px;
+   box-shadow:0 8px 32px rgba(20,28,40,.13);overflow:hidden}
+ .loginhead{background:#1f3864;color:#fff;padding:22px 26px}
+ .loginhead h1{margin:0;font-size:19px;font-weight:650}
+ .loginhead p{margin:4px 0 0;font-size:12.5px;opacity:.75}
+ .loginbody{padding:22px 26px 26px}
+ .tabs{display:flex;gap:2px;margin-bottom:18px;border-bottom:1px solid #dde3ea}
+ .tabs button{flex:1;padding:9px 0;background:none;border:0;border-bottom:2px solid
+   transparent;font:600 13px inherit;color:#6b7683;cursor:pointer}
+ .tabs button.on{color:#1f3864;border-bottom-color:#1f3864}
+ .f{display:block;margin-bottom:13px;font-size:12.5px;font-weight:600}
+ .f input,.f select{display:block;width:100%;margin-top:5px;padding:10px 12px;
+   border:1px solid #d5dce4;border-radius:7px;font:14px inherit;font-weight:400;
+   box-sizing:border-box;background:#fff}
+ .f input:focus,.f select:focus{outline:none;border-color:#1f3864;
+   box-shadow:0 0 0 3px rgba(31,56,100,.10)}
+ .go{width:100%;padding:11px;background:#1f3864;color:#fff;border:0;border-radius:7px;
+   font:650 14px inherit;cursor:pointer;margin-top:4px}
+ .go:hover{background:#183054}
+ .msg{min-height:18px;margin:10px 0 0;font-size:12.5px;font-weight:600;color:#c02626}
+ .msg.ok{color:#0f7b47}
+ .note{margin:16px 0 0;padding-top:14px;border-top:1px solid #eef1f5;
+   font-size:11.5px;color:#6b7683;line-height:1.55}
+ .req{color:#c02626}
+</style>
+</head>
+<body>
+<div class="loginwrap">
+  <div class="loginbox">
+    <div class="loginhead">
+      <h1>Project Estimation</h1>
+      <p>Sign in to continue</p>
+    </div>
+    <div class="loginbody">
+      <div class="tabs">
+        <button id="tabIn" class="on">Sign in</button>
+        <button id="tabUp">Create account</button>
+      </div>
+
+      <form id="formIn" method="post" action="{{ url_for('login') }}">
+        <input type="hidden" name="action" value="signin">
+        <label class="f">Email
+          <input type="email" name="email" autocomplete="username" required></label>
+        <label class="f">Password
+          <input type="password" name="password" autocomplete="current-password" required></label>
+        <button class="go" type="submit">Sign in</button>
+      </form>
+
+      <form id="formUp" method="post" action="{{ url_for('login') }}" style="display:none">
+        <input type="hidden" name="action" value="register">
+        <label class="f">Name <span class="req">*</span>
+          <input type="text" name="name" required></label>
+        <label class="f">Email <span class="req">*</span>
+          <input type="email" name="email" autocomplete="username" required></label>
+        <label class="f">Designation <span class="req">*</span>
+          <select name="designation" required>
+            {% for d in designations %}<option value="{{ d }}">{{ d }}</option>{% endfor %}
+          </select></label>
+        <label class="f">Password <span class="req">*</span>
+          <input type="password" name="password" autocomplete="new-password"
+                 minlength="6" required></label>
+        <button class="go" type="submit">Create account</button>
+      </form>
+
+      <p class="msg {{ 'ok' if ok else '' }}">{{ message or '' }}</p>
+
+      <p class="note">
+        Local sign-in for the offline build. Accounts are kept on this machine
+        only and there is no email verification yet &mdash; the address is just
+        how you sign in.
+      </p>
+    </div>
+  </div>
+</div>
+
+<script>
+  const tIn = document.getElementById("tabIn"), tUp = document.getElementById("tabUp");
+  const fIn = document.getElementById("formIn"), fUp = document.getElementById("formUp");
+  function show(which) {
+    const up = which === "up";
+    tUp.classList.toggle("on", up); tIn.classList.toggle("on", !up);
+    fUp.style.display = up ? "" : "none"; fIn.style.display = up ? "none" : "";
+  }
+  tIn.addEventListener("click", () => show("in"));
+  tUp.addEventListener("click", () => show("up"));
+  // Land on whichever panel the server was last dealing with, so a failed
+  // registration does not bounce back to the sign-in form with the message
+  // pointing at a form the user cannot see.
+  if ("{{ panel or 'in' }}" === "up") show("up");
+</script>
+</body>
+</html>

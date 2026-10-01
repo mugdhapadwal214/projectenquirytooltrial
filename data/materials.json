@@ -1,0 +1,185 @@
+{
+ "_note": "Material master. Density drives every weight in the app; the rest is printed in the RFQ material specification section. Edit this file directly - the app reads it at startup, no rebuild needed. The material NAME is the key used everywhere else (parts, offcut stock, job ledger), so renaming one means the old name must be migrated or it will no longer match.",
+ "_review_status": "Transcribed from the standards named in each record and NOT yet independently verified. Check against the actual spec before quoting. See Material_Reference_for_review.xlsx.",
+ "_units": "density kg/m3, composition weight %, strength MPa, elongation %, temperature degC",
+
+ "materials": [
+  {
+   "name": "Mild Steel IS2062",
+   "density": 7850,
+   "standard": "IS 2062:2011",
+   "grade": "E250 Gr. B",
+   "condition": "As rolled",
+   "composition": {
+    "C": "0.22 max", "Mn": "1.50 max", "Si": "0.40 max",
+    "P": "0.045 max", "S": "0.045 max",
+    "Carbon equivalent": "0.42 max"
+   },
+   "mechanical": {
+    "Yield strength": "250 min (thickness <= 20 mm)",
+    "Tensile strength": "410 min",
+    "Elongation": "23 min",
+    "Impact": "27 J at room temperature (Gr. B)"
+   },
+   "certification": "EN 10204 3.1",
+   "notes": "IS 2062 is a family, not a single grade. E250 has sub-grades A / B / BR / C with different impact requirements, and E300 to E450 exist above it. Yield falls to 240 MPa for 20-40 mm and 230 MPa above 40 mm. CONFIRM WHICH GRADE YOU BUY."
+  },
+  {
+   "name": "Stainless Steel 304",
+   "density": 7930,
+   "standard": "ASTM A240 / UNS S30400",
+   "grade": "304",
+   "condition": "Annealed",
+   "composition": {
+    "C": "0.07 max", "Mn": "2.00 max", "Si": "0.75 max",
+    "P": "0.045 max", "S": "0.030 max",
+    "Cr": "17.5-19.5", "Ni": "8.0-10.5", "N": "0.10 max"
+   },
+   "mechanical": {
+    "Yield strength": "205 min",
+    "Tensile strength": "515 min",
+    "Elongation": "40 min",
+    "Hardness": "92 HRB max"
+   },
+   "certification": "EN 10204 3.1",
+   "notes": "Non-magnetic in the annealed condition; may become slightly magnetic after cold work."
+  },
+  {
+   "name": "Stainless Steel 304L",
+   "density": 7930,
+   "standard": "ASTM A240 / UNS S30403",
+   "grade": "304L",
+   "condition": "Annealed",
+   "composition": {
+    "C": "0.030 max", "Mn": "2.00 max", "Si": "0.75 max",
+    "P": "0.045 max", "S": "0.030 max",
+    "Cr": "17.5-19.5", "Ni": "8.0-12.0", "N": "0.10 max"
+   },
+   "mechanical": {
+    "Yield strength": "170 min",
+    "Tensile strength": "485 min",
+    "Elongation": "40 min",
+    "Hardness": "92 HRB max"
+   },
+   "certification": "EN 10204 3.1",
+   "notes": "Low-carbon grade - resists sensitisation, so preferred where the part is welded and cannot be solution annealed afterwards."
+  },
+  {
+   "name": "Stainless Steel 316",
+   "density": 7980,
+   "standard": "ASTM A240 / UNS S31600",
+   "grade": "316",
+   "condition": "Annealed",
+   "composition": {
+    "C": "0.08 max", "Mn": "2.00 max", "Si": "0.75 max",
+    "P": "0.045 max", "S": "0.030 max",
+    "Cr": "16.0-18.0", "Ni": "10.0-14.0", "Mo": "2.00-3.00", "N": "0.10 max"
+   },
+   "mechanical": {
+    "Yield strength": "205 min",
+    "Tensile strength": "515 min",
+    "Elongation": "40 min",
+    "Hardness": "95 HRB max"
+   },
+   "certification": "EN 10204 3.1",
+   "notes": "Molybdenum addition improves pitting and crevice corrosion resistance over 304."
+  },
+  {
+   "name": "Stainless Steel 316L",
+   "density": 7980,
+   "standard": "ASTM A240 / UNS S31603",
+   "grade": "316L",
+   "condition": "Annealed",
+   "composition": {
+    "C": "0.030 max", "Mn": "2.00 max", "Si": "0.75 max",
+    "P": "0.045 max", "S": "0.030 max",
+    "Cr": "16.0-18.0", "Ni": "10.0-14.0", "Mo": "2.00-3.00", "N": "0.10 max"
+   },
+   "mechanical": {
+    "Yield strength": "170 min",
+    "Tensile strength": "485 min",
+    "Elongation": "40 min",
+    "Hardness": "95 HRB max"
+   },
+   "certification": "EN 10204 3.1",
+   "notes": "Low-carbon variant of 316, for welded service."
+  },
+  {
+   "name": "Stainless Steel 440C",
+   "density": 7700,
+   "standard": "ASTM A276 / UNS S44004",
+   "grade": "440C",
+   "condition": "Annealed, or hardened and tempered",
+   "composition": {
+    "C": "0.95-1.20", "Mn": "1.00 max", "Si": "1.00 max",
+    "P": "0.040 max", "S": "0.030 max",
+    "Cr": "16.0-18.0", "Mo": "0.75 max"
+   },
+   "mechanical": {
+    "Yield strength": "450 (annealed)",
+    "Tensile strength": "760 (annealed)",
+    "Elongation": "14 min (annealed)",
+    "Hardness": "58 HRC min after hardening"
+   },
+   "certification": "EN 10204 3.1",
+   "notes": "Martensitic and hardenable. Density was 7980 in an earlier build, copied from the 316 row; corrected to 7700. Published range is 7650-7750 - CONFIRM."
+  },
+  {
+   "name": "Aluminium AA6061",
+   "density": 2700,
+   "standard": "ASTM B209 / EN 573-3",
+   "grade": "6061",
+   "condition": "T6 / T651",
+   "composition": {
+    "Si": "0.40-0.80", "Fe": "0.70 max", "Cu": "0.15-0.40",
+    "Mn": "0.15 max", "Mg": "0.80-1.20", "Cr": "0.04-0.35",
+    "Zn": "0.25 max", "Ti": "0.15 max"
+   },
+   "mechanical": {
+    "Yield strength": "276 min (T6)",
+    "Tensile strength": "310 min (T6)",
+    "Elongation": "8-10 min",
+    "Hardness": "95 HB"
+   },
+   "certification": "EN 10204 3.1",
+   "notes": "Values are for T6/T651 temper. The O temper is far softer - state the temper on the order."
+  },
+  {
+   "name": "Titanium Ti 6AL4V",
+   "density": 4430,
+   "standard": "ASTM B265 Grade 5",
+   "grade": "Ti-6Al-4V (Grade 5)",
+   "condition": "Annealed",
+   "composition": {
+    "Al": "5.50-6.75", "V": "3.50-4.50", "Fe": "0.40 max",
+    "O": "0.20 max", "C": "0.08 max", "N": "0.05 max", "H": "0.015 max"
+   },
+   "mechanical": {
+    "Yield strength": "828 min",
+    "Tensile strength": "895 min",
+    "Elongation": "10 min",
+    "Hardness": "36 HRC"
+   },
+   "certification": "EN 10204 3.1",
+   "notes": "Alpha-beta alloy. Interstitial limits (O, N, H) matter as much as the alloying elements - do not omit them from the order."
+  },
+  {
+   "name": "Lead",
+   "density": 11340,
+   "standard": "ASTM B29",
+   "grade": "Commercially pure (99.94% Pb)",
+   "condition": "As cast / rolled",
+   "composition": {
+    "Pb": "99.94 min"
+   },
+   "mechanical": {
+    "Yield strength": "5-10",
+    "Tensile strength": "12-17",
+    "Elongation": "30-50",
+    "Hardness": "4 HB"
+   },
+   "certification": "EN 10204 2.2",
+   "notes": "Structurally very weak - used for shielding and lining, not load-bearing parts. Not normally laser cut."
+  }
+ ]
+}

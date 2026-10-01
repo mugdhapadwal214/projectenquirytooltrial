@@ -1,0 +1,10 @@
+{
+ "_note": "Cutting cost settings. Edit freely - the app reads this file at startup, no rebuild needed. Cost = cut length (m) x rate_per_m + pierces x pierce_charge. A pierce is one per closed contour, so a part with a bore costs two. Machine-time estimates are NOT included: they need measured feed rates per material and thickness, and invented ones look authoritative while being wrong.",
+ "rate_per_m": 45,
+ "_remnant_charge_note": "0 = a remnant is issued free, because the job that opened the plate already paid for it. Raise it if your accounts would rather carry offcut at a transfer price. Cutting is always charged, wherever the plate came from.",
+ "remnant_charge_pct": 0,
+ "_harvest_note": "A leftover rectangle is only racked if BOTH sides are at least min_side_mm AND its area is at least min_area_m2. Anything smaller is treated as scrap.",
+ "min_side_mm": 200,
+ "min_area_m2": 0.1,
+ "pierce_charge": 12
+}

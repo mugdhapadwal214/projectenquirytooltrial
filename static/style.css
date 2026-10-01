@@ -1,0 +1,589 @@
+:root{--bd:#d8dde3;--mut:#6b7280;--acc:#1f4e79;--warn:#b45309;--warnbg:#fef6e7}
+*{box-sizing:border-box}
+body{margin:0;font:14px/1.45 "Segoe UI",Arial,sans-serif;color:#1a1d21;background:#f4f6f8}
+header{background:var(--acc);color:#fff;padding:14px 22px}
+header h1{margin:0;font-size:18px;font-weight:600}
+header p{margin:3px 0 0;font-size:12.5px;opacity:.85}
+main{padding:20px 22px 60px;max-width:1240px;margin:0 auto}
+.card{background:#fff;border:1px solid var(--bd);border-radius:6px;padding:16px 18px;margin-bottom:16px}
+.card h2{margin:0 0 10px;font-size:14px;font-weight:600;color:var(--acc)}
+label.f{display:block;margin:8px 0 4px;font-size:12.5px;color:var(--mut)}
+input[type=text],input[type=number]{width:100%;padding:7px 9px;border:1px solid var(--bd);border-radius:4px;font:inherit}
+select{width:100%;padding:7px 9px;border:1px solid var(--bd);border-radius:4px;font:inherit;background:#fff}
+button{padding:8px 16px;border:1px solid var(--acc);background:var(--acc);color:#fff;
+  border-radius:4px;font:inherit;cursor:pointer}
+button.sec{background:#fff;color:var(--acc)}
+button:disabled{opacity:.45;cursor:not-allowed}
+.row{display:flex;gap:14px;align-items:flex-end;flex-wrap:wrap}
+.field{min-width:180px}
+.hint{font-size:12.5px;color:var(--mut);margin:6px 0 0}
+table{border-collapse:collapse;width:100%;font-size:13px}
+th,td{border:1px solid var(--bd);padding:5px 7px;vertical-align:top}
+th{background:#eef2f6;font-weight:600;text-align:center;position:sticky;top:0}
+td.num{text-align:center;white-space:nowrap}
+tr.total td{background:#f7f9fb;font-weight:600}
+td input.rem{width:100%;border:0;font:inherit;background:transparent}
+td input.part{width:100%;border:0;font:inherit;background:transparent}
+td input.part:focus,td input.rem:focus{outline:1px solid var(--bd)}
+.seg{display:inline-flex;border:1px solid var(--bd);border-radius:4px;overflow:hidden;flex-wrap:wrap}
+.seg span{padding:6px 14px;cursor:pointer;font-size:12.5px;background:#fff;border-right:1px solid var(--bd)}
+.seg span:last-child{border-right:none}
+.seg span.on{background:var(--acc);color:#fff}
+.tablewrap{max-height:62vh;overflow:auto;border:1px solid var(--bd);border-radius:5px}
+.stat{font-size:12.5px;color:var(--mut);margin:8px 0}
+.del-btn{background:#fff;border:1px solid var(--bd);color:var(--mut);
+  border-radius:4px;width:24px;height:24px;cursor:pointer;font-size:13px;line-height:1;padding:0}
+
+/* ---- abbreviated headers + legend ---- */
+th .u{font-weight:400;color:#7b8794;font-size:11px}
+.legend{margin-top:10px;padding:9px 11px;background:#f7f9fb;border:1px solid var(--bd);
+  border-radius:5px;font-size:12px;color:var(--mut);line-height:1.75}
+.legend-title{display:block;font-weight:600;color:var(--acc);font-size:11px;
+  text-transform:uppercase;letter-spacing:.5px;margin-bottom:3px}
+.legend-item{display:inline-block;margin-right:16px;white-space:nowrap}
+.legend-item b{color:#1a1d21;font-weight:600}
+
+/* ---- rate / RM cost columns ---- */
+th.rate-col{background:#e7eef6}
+td.rate-col{background:#fafcfe}
+td.rm-cost{font-weight:600;color:var(--acc);white-space:nowrap}
+.sub{display:block;font-size:10.5px;color:var(--mut);font-weight:400;white-space:nowrap}
+
+/* 12-column tables squeeze the dropdowns; keep them readable and let the
+   wrapper scroll horizontally on narrow windows rather than crushing them. */
+td select{min-width:104px}
+
+/* ---- tab badges (parts entered under each component) ---- */
+.seg span{position:relative}
+
+/* ---- plate settings ---- */
+.opt{padding:10px 0;border-bottom:1px solid var(--bd)}
+.opt:last-of-type{border-bottom:none}
+.chk{display:inline-flex;align-items:center;gap:7px;cursor:pointer;
+  font-size:13px;font-weight:600;color:#1a1d21}
+.chk input{width:15px;height:15px;accent-color:var(--acc);cursor:pointer}
+.plateinputs{display:flex;align-items:center;gap:7px;margin:8px 0 0 22px}
+.plateinputs input[type=number]{width:82px}
+.plateinputs select{min-width:150px}
+.plateinputs input:disabled,.plateinputs select:disabled{background:#f0f2f5;color:#9aa4b0}
+.x{color:var(--mut);font-size:12px}
+.opt .hint{margin:6px 0 0 22px}
+
+/* ---- fit flags ---- */
+.flag{padding:9px 12px;border-radius:5px;font-size:12.5px;margin-bottom:10px}
+.flag.ok{background:#eef7f0;border:1px solid #bcdcc4;color:#1d6b33}
+.flag.bad{background:#fdf0ee;border:1px solid #e8bdb5;color:#8a2e1c}
+.flag b{display:block;margin-bottom:4px}
+.flag div{margin:2px 0}
+.flag .note{margin-top:6px;font-size:11.5px;opacity:.85}
+.nofit{display:inline-block;width:14px;height:14px;line-height:14px;text-align:center;
+  border-radius:50%;background:#c0392b;color:#fff;font-size:10px;font-weight:700}
+
+/* ---- shared-plate marker + component tag ---- */
+.mixed{display:block;font-size:10.5px;color:var(--acc);font-weight:600;margin-top:2px}
+.ctag{display:inline-block;font-size:9px;font-weight:700;text-transform:uppercase;
+  letter-spacing:.3px;padding:1px 5px;margin-right:5px;border-radius:3px;
+  background:#e7eef6;color:var(--acc)}
+
+/* ---- plate-by-plate breakdown ---- */
+.sub-h{font-size:12px;font-weight:600;color:var(--acc);margin:18px 0 7px;
+  text-transform:uppercase;letter-spacing:.5px}
+table.plates{margin-bottom:12px}
+table.plates td{vertical-align:top}
+table.plates tr.off td{background:#fdf6f4}
+.pitem{padding:2px 0;font-size:12px}
+
+/* ---- cutting-layout diagrams ---- */
+.diagrams-title{font-size:12px;font-weight:600;color:var(--acc);margin:18px 0 10px;
+  text-transform:uppercase;letter-spacing:.5px}
+.diagrams-grid{display:flex;flex-wrap:wrap;gap:16px}
+.diagram-block{width:280px}
+.diagram-title{font-size:12px;font-weight:600;margin-bottom:5px}
+.diagram-title .sub{font-weight:400;color:var(--mut);margin-left:6px}
+.diagram-svg{width:100%;height:auto;background:#fff;border:1px solid var(--bd);
+  border-radius:4px;display:block}
+
+/* ---- three-cost columns ---- */
+td.strong{font-weight:700;color:var(--acc)}
+.fit{display:inline-block;margin-top:3px;font-size:10px;font-weight:700;
+  padding:2px 7px;border-radius:10px}
+.fit.yes{background:#e6f4ec;color:#0f7b47}
+.fit.no{background:#fdeaea;color:#c02626}
+#resultsTable > thead > tr > th{white-space:nowrap}
+#resultsTable > tbody > tr > td:nth-child(3){min-width:104px}
+#resultsTable > tbody > tr > td:nth-child(6){min-width:132px}
+
+/* ---- component tabs: inline count, no floating badge ---- */
+.seg span.has-gap{box-shadow:inset 0 -2px 0 #d98324}
+.tally{margin-top:8px;font-size:12.5px;color:var(--mut)}
+.tally b{color:var(--acc);font-size:13.5px}
+.tally .pend{color:#b06a00;font-weight:600}
+
+/* ---- rows that aren't in the calculation yet ---- */
+tr.incomplete td{background:#fffaf2}
+tr.incomplete td:first-child{box-shadow:inset 3px 0 0 #d98324}
+.need{font-size:10.5px;font-weight:600;color:#b06a00;white-space:normal;display:block;line-height:1.3}
+
+/* ---- offcut stock ---- */
+.cardhead-row{display:flex;justify-content:space-between;align-items:baseline;gap:12px}
+#rackTable code{font:11.5px ui-monospace,Consolas,monospace;color:var(--acc)}
+#rackTable td.empty{text-align:center;color:var(--mut);font-style:italic;padding:18px}
+.fromrack{color:#0f7b47}
+.mini{display:inline-flex;align-items:center;gap:5px;font-size:11.5px;color:var(--mut)}
+.mini input{width:78px}
+#rackActions{align-items:center;gap:10px}
+
+
+/* Multi-page navigation */
+.page-nav { display:flex; gap:8px; margin-top:14px; flex-wrap:wrap; }
+.nav-btn { border:1px solid #b9c3cc; background:#fff; color:var(--acc); padding:8px 14px; border-radius:7px; cursor:pointer; }
+.nav-btn.active { background:#1f4e79; color:#fff; border-color:#1f4e79; }
+.page-actions { display:flex; gap:8px; margin:14px 0; flex-wrap:wrap; }
+
+/* ---- rows already produced by a booked job ---- */
+tr.booked td{background:#f4f6f8;color:#8a93a0}
+tr.booked td:first-child{box-shadow:inset 3px 0 0 #7b8794}
+tr.booked select,tr.booked input{color:#8a93a0;background:#f4f6f8}
+.bookedtag{font-size:10px;font-weight:700;color:#5a6472;background:#e4e8ed;
+  padding:2px 6px;border-radius:9px;white-space:nowrap}
+
+/* ---- project summary ---- */
+/* Base KPI card. This stylesheet never had one — the summary page is the
+   first thing to use it. */
+.kpis{display:flex;flex-wrap:wrap;gap:10px;margin:14px 0 6px}
+.kpi{flex:1 1 150px;background:#f7f9fc;border:1px solid var(--bd);
+  border-radius:9px;padding:11px 13px}
+.kpi .v{font-size:19px;font-weight:650;color:var(--acc);line-height:1.15;
+  white-space:nowrap}
+.kpi .k{font-size:10.5px;text-transform:uppercase;letter-spacing:.55px;
+  color:var(--mut);margin-top:3px}
+
+.kpi.big .v{font-size:23px}
+.kpi.big{background:#eef3fb;border-color:#c3d2e8}
+.kpi.warn .v{color:#b06a00}
+.kpi.warn{background:#fffaf2;border-color:#e8d3b5}
+.pendtag{font-size:10px;font-weight:700;color:#b06a00;background:#fdf3e3;
+  padding:2px 7px;border-radius:9px;white-space:nowrap}
+#sumLineTable code{font:11.5px ui-monospace,Consolas,monospace;color:var(--acc)}
+#sumTypeTable td.empty,#sumLineTable td.empty{text-align:center;color:var(--mut);
+  font-style:italic;padding:18px}
+
+/* ---- project bar and projects page ---- */
+.projbar{display:flex;align-items:baseline;gap:10px;margin:6px 0 10px;
+  font-size:12.5px;flex-wrap:wrap}
+.pb-name{font-weight:700;color:#fff;font-size:14px}
+.pb-sub{color:rgba(255,255,255,.75)}
+.pb-id{font:11px ui-monospace,Consolas,monospace;color:rgba(255,255,255,.6);
+  background:rgba(255,255,255,.12);padding:1px 7px;border-radius:9px}
+.pb-status{color:#9fe0b8;font-size:11.5px}
+.pb-none{color:rgba(255,255,255,.8)}
+.pb-none .golink{color:#cfe6f2;text-decoration:underline}
+#projTable tr.open td{background:#eef3fb;box-shadow:inset 3px 0 0 var(--acc)}
+#projTable td.empty{text-align:center;color:var(--mut);font-style:italic;padding:20px}
+#projTable td .sub{display:block;white-space:nowrap}
+#projTable td{vertical-align:middle}
+#projTable td:nth-child(5),#projTable td:nth-child(6){white-space:nowrap;
+  font-size:11.5px;color:var(--mut)}
+#projTable td.when{white-space:nowrap;font-size:11.5px;color:var(--mut)}
+
+/* ---- projects page ---- */
+.proj-head{display:flex;justify-content:space-between;align-items:flex-start;
+  gap:16px;max-width:1180px;margin:0 auto 16px;padding:0 4px}
+.proj-title{font-size:24px;font-weight:650;color:#1a1d21;margin:0}
+.proj-sub{font-size:13px;color:var(--mut);margin:4px 0 0}
+.proj-actions{display:flex;align-items:center;gap:9px}
+.filebtn{cursor:pointer;padding:8px 14px;white-space:nowrap}
+.proj-note{margin-top:14px;padding-top:12px;border-top:1px solid var(--bd)}
+
+.proj-card{display:flex;justify-content:space-between;align-items:center;gap:16px;
+  border:1px solid var(--bd);border-radius:9px;padding:14px 16px;margin-bottom:9px;
+  background:#fff;transition:.13s}
+.proj-card:hover{border-color:#b9c6dd;box-shadow:0 1px 5px rgba(31,56,100,.07)}
+.proj-card.open{border-color:var(--acc);background:#f7faff;
+  box-shadow:inset 3px 0 0 var(--acc)}
+.proj-num{font:11.5px ui-monospace,Consolas,monospace;color:var(--acc);
+  letter-spacing:.3px}
+.proj-name{font-size:15.5px;font-weight:650;color:#1a1d21;margin:2px 0 3px}
+.proj-meta{font-size:11.5px;color:var(--mut)}
+.proj-btns{display:flex;gap:7px;flex-shrink:0}
+.sec.danger{color:#c02626;border-color:#e8c4c4}
+.sec.danger:hover{background:#fdf3f3;border-color:#d99a9a}
+.empty-note{text-align:center;color:var(--mut);font-style:italic;padding:26px 10px}
+
+/* ---- create-project dialog ---- */
+.modal-back{position:fixed;inset:0;background:rgba(20,28,40,.45);z-index:900;
+  display:flex;align-items:center;justify-content:center;padding:20px}
+.modal{background:#fff;border-radius:11px;width:100%;max-width:520px;
+  padding:22px 24px;box-shadow:0 12px 40px rgba(0,0,0,.25);
+  max-height:90vh;overflow:auto}
+.modal-head{display:flex;justify-content:space-between;align-items:flex-start;gap:12px}
+.modal-head h2{font-size:17px;color:var(--acc);margin:0}
+.modal-head .hint{margin:3px 0 0}
+.modal-x{background:none;border:1px solid var(--bd);color:var(--mut);
+  width:28px;height:28px;border-radius:6px;font-size:17px;line-height:1;
+  cursor:pointer;padding:0}
+.modal-x:hover{background:#f2f4f7;color:#1a1d21}
+.fld{display:block;margin-top:14px;font-size:12.5px;font-weight:600;color:#1a1d21}
+.fld input,.fld textarea{display:block;width:100%;margin-top:5px;padding:9px 11px;
+  border:1px solid var(--bd);border-radius:7px;font:13px inherit;font-weight:400;
+  background:#fff;box-sizing:border-box;resize:vertical}
+.fld input:focus,.fld textarea:focus{outline:none;border-color:var(--acc);
+  box-shadow:0 0 0 3px rgba(31,56,100,.09)}
+.req{color:#c02626}
+.modal-err{color:#c02626;font-weight:600;min-height:16px;margin:10px 0 0}
+.modal-foot{display:flex;justify-content:flex-end;gap:9px;margin-top:18px;
+  padding-top:16px;border-top:1px solid var(--bd)}
+
+/* ---- RFQ preview ---- */
+.rfq-preview{margin-top:14px;border:1px solid var(--bd);border-radius:8px;
+  background:#fff;overflow:hidden}
+#rfqFrame{width:100%;height:70vh;border:0;display:block}
+
+/* ---- project workspace sub-tabs ---- */
+.workbar{display:flex;align-items:center;gap:6px;max-width:1180px;
+  margin:0 auto 14px;padding:0 4px;flex-wrap:wrap}
+.work-btn{padding:7px 16px;border:1px solid var(--bd);background:#fff;
+  color:var(--mut);border-radius:7px;font:600 12.5px inherit;cursor:pointer}
+.work-btn:hover{border-color:#b9c6dd;color:var(--acc)}
+.work-btn.active{background:var(--acc);color:#fff;border-color:var(--acc)}
+.workproj{margin-left:auto;font-size:12px;color:var(--mut)}
+
+/* ---- BOM ---- */
+.bomcrumb{margin-top:12px;padding:9px 12px;background:#f2f5f9;
+  border-radius:7px;font-size:12.5px;color:var(--acc)}
+#bomTable select{min-width:150px}
+
+/* ---- vendors ---- */
+.sub-h .catcount{display:inline-block;margin-left:6px;font-size:10px;
+  font-weight:700;background:#e7eef6;color:var(--acc);padding:1px 7px;
+  border-radius:9px;vertical-align:middle}
+.catgrid{display:flex;flex-wrap:wrap;gap:8px;margin:6px 0 4px}
+.catbox{display:inline-flex;align-items:center;gap:6px;padding:6px 12px;
+  border:1px solid var(--bd);border-radius:20px;font-size:12.5px;cursor:pointer;
+  background:#fff}
+.catbox:hover{border-color:#b9c6dd}
+.catbox input{accent-color:var(--acc);cursor:pointer}
+.catbox .sub{display:inline;margin-left:4px}
+.modal-wide{max-width:720px}
+.fld-grid{display:grid;grid-template-columns:1fr 1fr;gap:0 14px}
+.fld-grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:0 14px}
+.opt{font-size:10.5px;color:var(--mut);font-weight:400;text-transform:none;
+  letter-spacing:0}
+#rfqItemTable td.empty{text-align:center;color:var(--mut);font-style:italic;
+  padding:18px}
+
+/* ---- assembly panel + workspace, as a real two-column layout -------------
+   Previously the panel was position:fixed at a hardcoded top:150px and the
+   content was pushed across with margin-left. Two separate numbers describing
+   the same edge: they disagreed the moment the header wrapped to a different
+   height or the window narrowed, and a table wider than the column pushed the
+   whole PAGE sideways, dragging the header out of view.
+
+   Now they are flex siblings. The panel sticks as the page scrolls, and the
+   content column carries min-width:0 - the one declaration that lets a flex
+   child shrink below its content, so a wide table scrolls inside its own box
+   instead of stretching the page. */
+main{display:flex;align-items:flex-start;gap:18px}
+.workcol{flex:1 1 auto;min-width:0}
+
+.bomside{flex:0 0 232px;position:sticky;top:16px;align-self:flex-start;
+  max-height:calc(100vh - 40px);overflow-y:auto;background:#fff;
+  border:1px solid var(--bd);border-radius:9px;padding:12px 0}
+.bomside-head{padding:0 13px 9px;border-bottom:1px solid var(--bd);margin-bottom:6px}
+.bomside-head h3{margin:0;font-size:11px;text-transform:uppercase;
+  letter-spacing:.6px;color:var(--acc)}
+.bomside-head .hint{margin:3px 0 0;font-size:10.5px}
+.bnode{display:flex;align-items:baseline;gap:5px;padding:5px 11px 5px 8px;
+  font-size:12px;border-left:3px solid transparent}
+.bnode:hover{background:#f5f8fc}
+.bnode.on{background:#eef3fb;border-left-color:var(--acc)}
+.bicon{color:var(--mut);font-size:10px;flex:0 0 auto}
+.bname{color:#1a1d21;cursor:pointer;overflow:hidden;text-overflow:ellipsis;
+  white-space:nowrap;min-width:0}
+.bname:hover{color:var(--acc);text-decoration:underline}
+.bqty{color:var(--mut);font-size:10.5px;flex:0 0 auto}
+.btype{margin-left:auto;font-size:9px;color:var(--acc);background:#e7eef6;
+  padding:1px 5px;border-radius:3px;flex:0 0 auto;white-space:nowrap}
+.bempty{padding:13px;font-size:11.5px;color:var(--mut);font-style:italic}
+
+/* When the assembly panel is showing, the workspace uses the whole remaining
+   width rather than staying inside the centred column. Twelve-column part
+   tables need every pixel, and a fixed 1180 px cap plus a 250 px margin left
+   them scrolling on a wide screen for no reason.
+
+   Driven by a class on <body>, set in showWork()/showPage(). The previous
+   rule sniffed the inline style attribute with :has(), which broke the moment
+   anything else touched that attribute. */
+/* With the panel showing, the workspace uses the full window rather than the
+   centred reading column - twelve-column part tables need the room. */
+body.has-bomside main{max-width:none}
+body.has-bomside .workbar,
+body.has-bomside .proj-head{max-width:none;margin-left:0}
+
+/* ---- part tables: stop columns collapsing to nothing ----------------------
+   With twelve columns the browser was squeezing number inputs to ~25 px, so
+   values like 10.287 rendered as a sliver of the first digit and the row
+   looked empty. The table is allowed to exceed the card and scroll instead. */
+#partsTable{min-width:max-content}
+#partsTable th,#partsTable td{white-space:nowrap}
+#partsTable th{padding-left:9px;padding-right:9px}
+/* Fixed widths, not 100%. With the table sized to its content, a percentage
+   width makes every column expand to match the widest, which is just as
+   unreadable the other way. */
+#partsTable td input.rem{width:82px;min-width:82px}
+/* Part number and part name hold real text — "BOTTOM PLATE", "05 GUSSET PLATE" —
+   so they are wide enough to read at a glance, and grow with what is typed. */
+#partsTable td input.part{width:190px;min-width:190px}
+#partsTable td select{min-width:118px}
+#partsTable td .dash{color:var(--mut);display:inline-block;min-width:60px;text-align:center}
+
+/* the horizontal scrollbar should be obvious when there is one */
+.tablewrap{scrollbar-width:thin}
+.tablewrap::-webkit-scrollbar{height:9px}
+.tablewrap::-webkit-scrollbar-thumb{background:#c3cdd9;border-radius:5px}
+.tablewrap::-webkit-scrollbar-track{background:#f0f3f7}
+
+/* ---- part row states -------------------------------------------------------
+   green  costed and unchanged since
+   amber  costed, then edited - the Results page is stale for this line
+   Both are quiet washes rather than strong fills: the row is still a form to
+   be read and typed into, not a status badge. */
+/* A saved part is greyed but NOT frozen - "reopen" unlocks it. */
+tr.booked input,tr.booked select{background:transparent}
+.undo-btn{background:#fff;border:1px solid #e0c9a6;color:#b06a00;
+  font:600 10px inherit;padding:3px 8px;border-radius:5px;cursor:pointer;
+  margin-right:5px;vertical-align:middle}
+.undo-btn:hover{background:#fff6ea;border-color:#c9a878}
+
+/* ---- BOM: costed lines, and the manufacturing-process grid ---- */
+tr.bomdone td{background:#e4f4ec}
+tr.bomdone td:first-child{box-shadow:inset 3px 0 0 #2f9e63}
+#bomTable{min-width:max-content}
+
+/* The description columns were taking most of the width and squeezing the
+   sixteen process ticks into a strip. Tighten them so the checkboxes get
+   room to breathe. */
+#bomTable td input.part{min-width:210px;width:210px}
+#bomTable td input.rem{min-width:64px;width:64px}
+#bomTable td select{min-width:124px}
+#bomTable th,#bomTable td{padding-left:7px;padding-right:7px}
+
+#bomTable th.procgroup{text-align:center;font-size:10px;text-transform:uppercase;
+  letter-spacing:.5px;background:#eef2f7;border-bottom:1px solid var(--bd)}
+#bomTable th.proccol{width:36px;min-width:36px;padding:6px 0;text-align:center;
+  font:700 11.5px ui-monospace,Consolas,monospace;color:var(--acc);cursor:help}
+#bomTable td.proccell{width:36px;min-width:36px;text-align:center;padding:9px 0;
+  border-left:1px solid #eef1f5}
+#bomTable td.proccell input{accent-color:var(--acc);cursor:pointer;margin:0;
+  width:15px;height:15px}
+
+/* what the codes mean */
+.proclegend{margin-top:10px;padding:10px 12px;background:#f7f9fb;
+  border:1px solid var(--bd);border-radius:6px;font-size:11.5px;color:var(--mut)}
+.proclegend .legend-title{display:block;font-weight:600;color:var(--acc);
+  font-size:11px;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px}
+.proclegend .pitem{display:inline-block;margin:0 18px 4px 0;white-space:nowrap}
+.proclegend .pcode{display:inline-block;min-width:17px;font:700 11.5px
+  ui-monospace,Consolas,monospace;color:var(--acc)}
+
+/* ---- who is signed in ---- */
+.userstrip{position:absolute;top:14px;right:22px;display:flex;align-items:center;
+  gap:10px;font-size:12px}
+.userstrip .uname{color:#fff;font-weight:600}
+.userstrip .urole{color:#b9c9e0;background:rgba(255,255,255,.12);
+  padding:2px 9px;border-radius:10px;font-size:10.5px}
+.userstrip .signout{color:#cfe0f5;text-decoration:none;font-weight:600;
+  border:1px solid rgba(255,255,255,.28);padding:3px 11px;border-radius:6px}
+.userstrip .signout:hover{background:rgba(255,255,255,.14);color:#fff}
+header{position:relative}
+
+/* ---- approvals ---- */
+#apBadge{font-size:10.5px;color:#ffd27a;font-weight:700}
+.apcard{border:1px solid var(--bd);border-radius:9px;padding:14px 16px;
+  margin-bottom:11px;background:#fff}
+.aphead code{font:11.5px ui-monospace,Consolas,monospace;color:var(--acc)}
+.apname{font-size:15px;font-weight:650;margin:4px 0 2px}
+.apmeta{font-size:11.5px;color:var(--mut)}
+.apstat{display:inline-block;margin-left:7px;font-size:10px;font-weight:700;
+  padding:2px 9px;border-radius:10px;text-transform:uppercase;letter-spacing:.4px}
+.ap-pending{background:#fff4e0;color:#b06a00}
+.ap-approved{background:#e6f4ec;color:#0f7b47}
+.ap-rejected{background:#fdeaea;color:#c02626}
+.ap-issued{background:#e7eef6;color:#1f3864}
+.ap-stale{background:#f3e8fd;color:#7a3ba8}
+.apchain{display:flex;flex-wrap:wrap;gap:6px;margin:11px 0}
+.apstep{font-size:10.5px;padding:4px 10px;border-radius:14px;border:1px solid var(--bd);
+  color:var(--mut);background:#fafbfc}
+.apstep b{font-weight:600}
+.apstep.ap-approved{background:#e6f4ec;color:#0f7b47;border-color:#bfe3ce}
+.apstep.ap-rejected{background:#fdeaea;color:#c02626;border-color:#eec4c4}
+.apbody{font-size:12.5px;color:var(--mut);margin-top:4px}
+.aprow{display:flex;align-items:center;gap:8px;margin-top:11px;flex-wrap:wrap}
+.apnote{flex:1 1 240px;padding:8px 11px;border:1px solid var(--bd);
+  border-radius:7px;font:13px inherit}
+#apOutbox td.empty{text-align:center;color:var(--mut);font-style:italic;padding:16px}
+
+/* ---- approval chain: role plus the person holding it ---- */
+.apstep{display:inline-flex;flex-direction:column;align-items:flex-start;
+  line-height:1.25;padding:5px 11px}
+.apstep .apwho{font-size:9.5px;font-weight:400;opacity:.8;margin-top:1px;
+  max-width:130px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.apstep.ap-gap{border-style:dashed}
+.apstep.ap-gap .apwho{color:#b06a00;font-weight:600}
+
+
+/* ---- RFQ preview -------------------------------------------------------
+   Deliberately paper-like: white sheet, ruled header block, one boxed table
+   per item. It is meant to read as the document, not as another app screen,
+   so what is approved on screen matches what lands in the vendor's inbox. */
+.rfqtabs { display:flex; gap:6px; flex-wrap:wrap; padding:0 4px 10px; }
+.rfqtabs button {
+  background:#eef2f7; color:#25405e; border:1px solid #cfd9e6;
+  padding:5px 12px; border-radius:6px; font-size:12.5px; cursor:pointer;
+}
+.rfqtabs button.on { background:#1e3a5f; color:#fff; border-color:#1e3a5f; }
+.rfqpaper {
+  background:#fff; border:1px solid #d7dee8; border-radius:4px;
+  padding:26px 30px; max-height:60vh; overflow:auto;
+  font-family:Calibri, Carlito, "Segoe UI", sans-serif;
+  font-size:13px; color:#111; line-height:1.45;
+}
+.rfqhead { border:1px solid #333; border-bottom:none; margin-bottom:14px; }
+.rfqhrow { display:grid; grid-template-columns:1fr 1fr; }
+.rfqhrow > div { border-bottom:1px solid #333; padding:4px 8px; }
+.rfqhrow > div:first-child { border-right:1px solid #333; }
+.rfqtitle { text-align:center; font-size:21px; font-weight:700; margin:14px 0 2px; }
+.rfqno { text-align:center; font-size:12px; margin:0 0 16px; }
+.rfqsec { font-size:14px; font-weight:700; margin:16px 0 6px;
+          border-bottom:1px solid #99a7ba; padding-bottom:3px; }
+.rfqitem { border:1px solid #333; margin-bottom:14px; }
+.rfqirow { border-bottom:1px solid #333; padding:4px 8px; }
+.rfqirow:last-child { border-bottom:none; }
+.rfqirow.lead { background:#edf1f7; font-weight:700; font-size:13.5px; }
+.rfqirow .k { font-weight:inherit; }
+.rfqirow.lead .k, .rfqirow.lead .v { font-weight:700; }
+.rfqtotal { font-weight:700; margin:12px 0 6px; }
+.rfqlist { margin:4px 0 8px 20px; }
+.rfqlist li { margin-bottom:3px; }
+.rfqline { margin:2px 0; }
+
+
+/* ---- BOM import report -------------------------------------------------
+   Sits under the table because it is about lines the user now has to fix,
+   not a transient toast that disappears before it is read. */
+.bomreport { margin-top:14px; border-top:1px solid #e2e8f0; padding-top:12px; }
+.bomissue {
+  border-left:3px solid #b4443a; background:#fdf3f2; border-radius:4px;
+  padding:9px 13px; margin-bottom:9px; font-size:12.5px; color:#4a2b28;
+}
+.bomissue.warn { border-left-color:#b8860b; background:#fdf8ec; color:#4a3c1e; }
+.bomissue.ok   { border-left-color:#2e7d5b; background:#f0f8f4; color:#20493a; }
+.bomissue ul { margin:6px 0 0 18px; }
+.bomissue li { margin-bottom:2px; }
+.bomissue code {
+  background:rgba(0,0,0,.06); padding:1px 5px; border-radius:3px;
+  font-size:12px;
+}
+
+
+/* ---- project status board ---------------------------------------------- */
+.stats{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin:14px 0}
+.stat{background:#fff;border:1px solid var(--bd);border-left:4px solid var(--acc);
+  border-radius:5px;padding:11px 14px}
+.stat .n{font-size:23px;font-weight:700;line-height:1.1}
+.stat .l{font-size:12px;color:var(--mut)}
+.stat.done{border-left-color:#0f7b47}.stat.done .n{color:#0f7b47}
+.stat.prog{border-left-color:#b06a00}.stat.prog .n{color:#b06a00}
+.stat.late{border-left-color:#c02626}.stat.late .n{color:#c02626}
+.stat.wait{border-left-color:#7b8794}.stat.wait .n{color:#4a5464}
+.board{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;align-items:start}
+.phase{background:#fff;border:1px solid var(--bd);border-radius:6px;overflow:hidden}
+.phase>h3{margin:0;padding:10px 12px;font-size:13px;background:#eef3fb;color:var(--acc);
+  border-bottom:1px solid var(--bd);display:flex;justify-content:space-between;
+  gap:6px;align-items:center}
+.phase>h3 .pct{font-weight:400;font-size:11.5px;color:var(--mut);white-space:nowrap}
+.pbar{height:3px;background:#e7eef6}
+.pbar i{display:block;height:100%;background:var(--acc)}
+.pbar i.g{background:#0f7b47}.pbar i.r{background:#c02626}
+.acts{padding:10px;display:flex;flex-direction:column;gap:9px}
+.act{border:1px solid var(--bd);border-left:3px solid #b9c6dd;border-radius:0 4px 4px 0;
+  padding:9px 10px;background:#fff}
+.act.done{border-left-color:#0f7b47;background:#f7fbf9}
+.act.prog{border-left-color:#b06a00;background:#fffaf2}
+.act.late{border-left-color:#c02626;background:#fdf6f6}
+.act.hold{border-left-color:#7b8794;background:#f7f9fb}
+.act .nm{font-size:13px;font-weight:700;margin-bottom:5px;line-height:1.25}
+.pill{display:inline-block;font-size:10.5px;padding:2px 7px;border-radius:9px;font-weight:700}
+.p-done{background:#e6f4ec;color:#0f7b47}
+.p-prog{background:#fff2dd;color:#b06a00}
+.p-todo{background:#eef2f7;color:#4a5464}
+.p-late{background:#fdeaea;color:#c02626}
+.p-hold{background:#eef2f7;color:#4a5464}
+.p-auto{background:#eef3fb;color:var(--acc);font-weight:400}
+.act .meta{font-size:11.5px;color:var(--mut);margin-top:6px;line-height:1.6}
+.act .who{display:inline-flex;align-items:center;gap:4px}
+.act .facts{margin-top:6px;font-size:11.5px;color:#4a5464;line-height:1.7;
+  border-top:1px dashed #e2e8f0;padding-top:6px}
+.act .facts b{color:#1a1d21;font-weight:700}
+.avm{width:15px;height:15px;border-radius:50%;background:var(--acc);color:#fff;
+  font-size:9px;display:inline-flex;align-items:center;justify-content:center;font-weight:700}
+.due.late{color:#c02626;font-weight:700}
+.act .rem{font-size:11.5px;color:#4a5464;font-style:italic;margin-top:5px;
+  border-top:1px dashed #e2e8f0;padding-top:5px}
+.act .btns{display:flex;gap:5px;justify-content:flex-end;margin-top:7px}
+.act .mini{border:1px solid var(--bd);background:#fff;border-radius:3px;font-size:11px;
+  padding:2px 7px;color:#4a5464;cursor:pointer}
+.act .mini:hover{background:#eef3fb;border-color:var(--acc);color:var(--acc)}
+.addact{border:1px dashed var(--bd);border-radius:4px;padding:7px;text-align:center;
+  font-size:12px;color:var(--mut);cursor:pointer;background:#fbfcfd}
+.addact:hover{border-color:var(--acc);color:var(--acc)}
+.blocked{background:#fdeaea;color:#8f2020;font-size:11.5px;padding:6px 9px;
+  border-radius:3px;margin-top:6px;line-height:1.45}
+.legend{margin-top:14px;font-size:12px;color:var(--mut);display:flex;gap:16px;flex-wrap:wrap}
+.legend b{color:#1a1d21}
+.flab{display:block;font-size:12.5px;color:#334155;margin:11px 0 4px;font-weight:700}
+.flab i{color:#c02626;font-style:normal}
+
+/* The row a BOM line just opened. Brief, because it answers "which one?" and
+   then stops being useful. */
+#partsTable tbody tr.flashrow > td { background:#fff6d9 !important; }
+#partsTable tbody tr.flashrow > td:first-child { box-shadow:inset 3px 0 0 #b06a00; }
+
+/* per-group plate size chooser */
+.opth{font-size:13px;color:var(--acc);margin:0 0 4px;font-weight:700}
+.platetable{width:100%;border-collapse:collapse;margin:8px 0;font-size:12.5px}
+.platetable th,.platetable td{border:1px solid var(--bd);padding:5px 8px;text-align:left}
+.platetable th{background:#eef3fb;color:var(--acc);font-weight:700}
+.platetable td.num,.platetable th.num{text-align:right}
+.platetable select{width:100%;padding:4px 6px;border:1px solid var(--bd);
+  border-radius:3px;font:inherit;font-size:12.5px}
+.platewarn{background:#fdf8ec;border-left:3px solid #b8860b;color:#4a3c1e;
+  font-size:11.5px;padding:5px 8px;margin-top:5px;border-radius:3px;line-height:1.45}
+
+/* ---- reimbursement sheet ---- */
+.grid4{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+.grid2{display:grid;grid-template-columns:2fr 1fr;gap:16px}
+.rbtotals{border:1px solid var(--bd);border-radius:5px;padding:10px 14px;
+  align-self:start;background:#fbfcfd}
+.rbrow{display:flex;justify-content:space-between;gap:14px;padding:4px 0;font-size:13px}
+.rbrow.over b{color:#c02626}
+.rbrow.tot{border-top:1px solid var(--bd);margin-top:5px;padding-top:7px;
+  font-size:14px;color:var(--acc)}
+#rbTable input,#rbTable select{width:100%;padding:4px 6px;border:1px solid var(--bd);
+  border-radius:3px;font:inherit;font-size:12.5px}
+
+/* Stop the row re-measuring when the RM Cost note changes between
+   "needs H, Matl" and a figure. Without a floor the whole table nudged
+   sideways every repaint, which is what made a cell feel like it moved out
+   from under the cursor. */
+#partsTable td.rm-cost, #partsTable th.rate-col { min-width: 150px; }
+#partsTable td.rm-cost .need { white-space: nowrap; }
+
+.billlist{list-style:none;margin:4px 0 0;padding:0;display:flex;flex-wrap:wrap;gap:8px}
+.billlist li{background:#eef3fb;border:1px solid var(--bd);border-radius:4px;
+  padding:4px 8px;font-size:12.5px;display:flex;align-items:center;gap:6px}
+
+/* repeated cutting layouts are shown once, with how many plates they stand for */
+.diagram-title .xn{display:inline-block;margin-left:6px;padding:1px 7px;border-radius:10px;
+  background:var(--acc);color:#fff;font-size:11px;font-weight:700;vertical-align:middle}
+.diagrams-title .sub{font-weight:400;color:var(--mut);font-size:12px}

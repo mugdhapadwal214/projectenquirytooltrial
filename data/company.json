@@ -1,0 +1,53 @@
+{
+ "_note": "Your company details and the standard RFQ wording, taken from RFQ_RM.docx. Edit this file directly - the app reads it when it builds an RFQ, no rebuild needed. Each list is printed as bullets, one line per entry.",
+ "company": {
+  "name": "MakerStrive Engineering Pvt. Ltd.",
+  "address": "3rd Floor, OZ Plaza, Dighi, Pune 411039, Maharashtra, India",
+  "gstin": "27AANCM3993N1ZI"
+ },
+ "contact": {
+  "person": "Mr. Pushkaraj Ambadkar",
+  "phone": "8796040473",
+  "email": "pushkaraj.1051@makerstrive.com"
+ },
+ "_rfq_number_note": "Prefix is combined with the project number and a serial, e.g. RFQ-MS_1082_114-RM-001. Change the prefix or the RM tag to match your own numbering.",
+ "rfq_prefix": "RFQ",
+ "validity_days": 10,
+ "material_criteria": [
+  "The provided material must meet or exceed the specified size requirements.",
+  "If the provided material fails in quality assessment test, it is the responsibility of the vendor to replace it.",
+  "Mill test certificates should be provided by the vendor at the time of delivery. Certificate should include Mill Heat Number, Lot Number, Chemical Composition, mechanical testing, Hardness, IGC Test result, etc.",
+  "Raw material should be of reputed make and standard only. Preferably Tata Steel, Jindal Stainless and SAIL (Steel Authority of India Limited).",
+  "The provided material should match the required material grade and size required.",
+  "Any scratches and uneven shape will not be acceptable.",
+  "Dents and bends on the surface of material will not be acceptable.",
+  "If there is any material requirement of non-standard sizes then the vendor will be informed about it. Vendor should supply the non-standard sized material by considering 10 to 15 mm of extra allowance on the size mentioned in the RFQ.",
+  "For material verification, MakerStrive will test the supplied material in the lab by taking a test specimen from each lot/heat. Material properties mentioned on the MTC supplied by the vendor are expected to be in good agreement with lab test reports. In case there is a deviation in the material properties mentioned on the MTC from the lab test report data, the vendor has to replace the entire lot of material at no extra cost.",
+  "The final cost will be dependent on the raw material total weight and its rate."
+ ],
+ "quote_instructions": [
+  "Take time to read and understand the RFQ.",
+  "Take time to understand our requirements.",
+  "Take time to understand how your quote will be evaluated. See all the documents if attached with mail.",
+  "For resources on submitting a quote: pushkaraj.1051@makerstrive.com",
+  "If you have any questions, ask our point of contact (see above) before the deadline for quotation.",
+  "If applicable, a Non-Disclosure Agreement (NDA) should be signed by the vendor.",
+  "Check you have provided all information in the format and order.",
+  "Vendor should submit GST certificates before sending the purchase order.",
+  "Submit your quote before the deadline."
+ ],
+ "delivery_address": [
+  "Maker Strive Engineering Pvt. Ltd,",
+  "Near New Riya Fibrotech, Magzine Chouk,",
+  "Shree Gajanan Maharaj Nagar,",
+  "Dighi, Pune 411039",
+  "Maharashtra, India."
+ ],
+ "price_note": "If a vendor offers a substantially lower price than other quotes, we may make enquiries or require additional evidence to verify that the vendor is capable of meeting all the requirements and conditions of the proposed contract for the price quoted.",
+ "delivery_payment": [
+  "MakerStrive will be liable to pay only the material cost (inclusive of any taxes). No payment will be made towards the packaging of the material, transportation, insurance, etc. unless specified in the purchase order.",
+  "Unless otherwise agreed in writing, the prices for goods shall be firm and fixed.",
+  "Payments will be made only by RTGS/NEFT/Bank Transfer to the vendor's designated bank account which has been communicated to us.",
+  "Payment terms will be mentioned in the purchase order after discussion with the vendor. Accordingly all payments will be done."
+ ]
+}
